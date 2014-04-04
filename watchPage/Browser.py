@@ -238,8 +238,10 @@ class Browser:
             else:
                 self.currentResponse = urllib2.urlopen(url, None, self.timeout).read()
 
-    def read(self):
+    def read(self, url=None, refresh=False):
         """读取一个网页内容"""
+        if url is not None:
+            self.open(url, refresh)
         return self.currentResponse
 
 if __name__ == '__main__':
