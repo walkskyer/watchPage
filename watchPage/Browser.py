@@ -220,8 +220,8 @@ class Browser:
         """返回最近一次浏览器读取的响应数据"""
         return self.currentResponse
 
-    def read(self, url, refresh=False):
-        """读取一个网页内容"""
+    def open(self, url, refresh=False):
+        """打开一个网页"""
         url = self.perfectUrl(url)
 
         if self.currentUrl != url or refresh is True:
@@ -237,6 +237,9 @@ class Browser:
                 self.currentResponse = self.urlOpener.open(self.request(url)).read()
             else:
                 self.currentResponse = urllib2.urlopen(url, None, self.timeout).read()
+
+    def read(self):
+        """读取一个网页内容"""
         return self.currentResponse
 
 if __name__ == '__main__':
