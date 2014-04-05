@@ -33,7 +33,6 @@ class Browser:
         self.cookiejar = cookielib.CookieJar()
         self.urlOpener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookiejar))
         self.urlOpener.addheaders = [('User-agent', self.userAgent)]
-        urllib2.install_opener(self.urlOpener)
 
         self.currentUrl = None
         self.currentResponse = None
