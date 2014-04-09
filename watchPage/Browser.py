@@ -9,6 +9,7 @@ import urllib2
 import cookielib
 import bs4
 import re
+import Cookie
 
 
 class Singleton(type):
@@ -51,6 +52,48 @@ class Browser:
         """设置http代理,address:port"""
         self.proxy = urllib2.ProxyHandler({'http': proxy})
         self.urlOpener.add_handler(self.proxy)
+
+    def setCookie(self, cookie):
+        """设置cookie
+        cookie可以为str类型，形如'tracknick=xxxx; expires=Thu, 09-Apr-2015 12:48:59 GMT; domain=.xxx.com; path=/'
+        """
+        if isinstance(cookie, Cookie.SimpleCookie):
+            self.cookiejar.set_cookie(cookie)
+        if isinstance(cookie, str):
+            for cookieTemp in self.parseCookie(cookie):
+                self.cookiejar.set_cookie(cookieTemp)
+
+    def parseCookie(self, rawdata):
+        """转换cookie"""
+        c = Cookie.SimpleCookie()
+        c.load(rawdata)
+        ret = []
+        for k in c:
+            #get v as Morsel Object
+            v = c[k]
+            if v['version'] == '':
+                v['version'] = 0
+            v['expires'] = None
+            ret.append(cookielib.Cookie(
+                name=v.key,
+                value=v.value,
+                version=v['version'],
+                port=None,
+                port_specified=False,
+                domain=v['domain'],
+                domain_specified=True,
+                domain_initial_dot=True,
+                path=v['path'],
+                path_specified=True,
+                secure=v['secure'],
+                expires=v['expires'],
+                discard=False,
+                comment=v['comment'],
+                comment_url=None,
+                rest={'HttpOnly': v['HttpOnly'.lower()]},
+                rfc2109=False,
+            ))
+        return ret
 
     def submitForm(self, url=None, fields={}, headers={}):
         """提交一个表单,并返回服务器的相应页面"""
