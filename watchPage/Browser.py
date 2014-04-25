@@ -117,8 +117,7 @@ class Browser:
             req = urllib2.Request(self.selectedForm['action'], self.urlencode(self.selectedForm['fields']))
         for k, v in headers.items():
             req.add_header(k, v)
-        self.currentResponse = self.urlOpener.open(req).read()
-        return self.currentResponse
+        self.currentResponse = self.urlOpener.open(req)
 
     def createForm(self, url, fieds, method='post'):
         """创建表单"""
@@ -211,8 +210,13 @@ class Browser:
         if method is None or method.lower() == 'get':
             if data is not None:
                 url += '?' + self.urlencode(data)
-            return urllib2.Request(url)
-        return urllib2.Request(url, self.urlencode(data))
+            request = urllib2.Request(url)
+        else:
+            request = urllib2.Request(url, self.urlencode(data))
+
+        self.currentResponse = self.urlOpener.open(request)
+
+
 
     def getRootUrl(self, url):
         """
@@ -260,7 +264,7 @@ class Browser:
 
     def getOriginData(self,):
         """返回最近一次浏览器读取的响应数据"""
-        return self.currentResponse
+        return self.currentResponse.read()
 
     def open(self, url, refresh=False):
         """打开一个网页"""
@@ -276,15 +280,15 @@ class Browser:
                 self.host = urlMatch[2]
 
             if isinstance(self.urlOpener, urllib2.OpenerDirector):
-                self.currentResponse = self.urlOpener.open(self.request(url)).read()
+                self.currentResponse = self.urlOpener.open(self.request(url))
             else:
-                self.currentResponse = urllib2.urlopen(url, None, self.timeout).read()
+                self.currentResponse = urllib2.urlopen(url, None, self.timeout)
 
     def read(self, url=None, refresh=False):
         """读取一个网页内容"""
         if url is not None:
             self.open(url, refresh)
-        return self.currentResponse
+        return self.currentResponse.read()
 
 if __name__ == '__main__':
     br = Browser()
