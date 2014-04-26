@@ -280,7 +280,7 @@ class Browser:
                 self.host = urlMatch[2]
 
             if isinstance(self.urlOpener, urllib2.OpenerDirector):
-                self.currentResponse = self.urlOpener.open(self.request(url))
+                self.request(url)
             else:
                 self.currentResponse = urllib2.urlopen(url, None, self.timeout)
 
@@ -294,4 +294,5 @@ if __name__ == '__main__':
     br = Browser()
     url = 'http://www.baidu.com'
     br.selectForm(url, name="f")
-    print br.submitForm(url, {'wd': '自行车','bs':'自行车'})
+    br.submitForm(url, {'wd': '自行车','bs':'自行车'})
+    print br.read()
